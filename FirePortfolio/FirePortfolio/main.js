@@ -35,7 +35,6 @@ const gridHelper = new THREE.GridHelper(200,50);
 scene.add(lightHelper)
 
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.update();
 
 function addStar(){
   const geometry = new THREE.SphereGeometry(0.25);
@@ -44,13 +43,46 @@ function addStar(){
   const [x,y,z]= Array(3).fill().map(()=> THREE.MathUtils.randFloatSpread(100))
   
   star.position.set(x,y,z);
-  scene.add(star)
+  scene.add(star) 
   }
   
   Array(250).fill().forEach(addStar)
 
   const spaceTexture = new THREE.TextureLoader().load('spaceOne.jpg');
   scene.background = spaceTexture;
+
+  const avatarTexture = new THREE.TextureLoader().load('Johnson.jpg');
+ const avatar = new THREE.Mesh(
+ new THREE.BoxGeometry(10,10,10), 
+ new THREE.MeshBasicMaterial({map: avatarTexture})
+);
+ scene.add(avatar);
+
+ const planetTexture = new THREE.TextureLoader().load('moon.jpg');
+ 
+ 
+ const planet =  new THREE.Mesh(
+  new THREE.SphereGeometry(3,32,32),
+  new THREE.MeshStandardMaterial({map: planetTexture,})
+ );
+ planet.position.z = 30;
+ planet.position.setX(-10);
+  
+ function moveCamera(){
+ const t = document.body.getBoundingClientRect().top;
+ planet.rotation.x += 0.05;
+ planet.rotation.y += 0.075;
+ planet.rotation.z += 0.05;
+  
+ avatar.rotation.y += 0.01;
+ avatar.rotation.z += 0.01;
+  
+ camera.position.z = t * -0.01;
+ camera.position.x = t * -0.0002;
+ camera.rotation.y = t * -0.0002;
+ }
+  
+ document.body.onscroll = moveCamera
 
 function animate(){
   requestAnimationFrame(animate);
@@ -59,7 +91,7 @@ torus.rotation.x += 0.01;
 torus.rotation.y += 0.01;
 torus.rotation.z += 0.01;
 
-
+controls.update();
 
 renderer.render(scene, camera);
 }
